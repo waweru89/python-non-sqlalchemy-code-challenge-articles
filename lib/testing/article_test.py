@@ -24,14 +24,17 @@ class TestArticle:
         magazine = Magazine("Vogue", "Fashion")
         article_1 = Article(author, magazine, "How to wear a tutu with style")
 
-        # comment out the next two lines if using Exceptions
-        article_1.title = 500
+        # Test that title cannot be changed
+        with pytest.raises(AttributeError):
+            article_1.title = 500  # Trying to modify the title should raise an AttributeError
+
+        # Assert the title remains the same
         assert article_1.title == "How to wear a tutu with style"
         
         assert isinstance(article_1.title, str)
 
-        # uncomment the next two lines if using Exceptions
-        # with pytest.raises(Exception):
+        # Uncomment to check validation for incorrect title types
+        # with pytest.raises(ValueError):
         #     Article(author, magazine, 500)
 
     def test_title_is_valid(self):
@@ -42,12 +45,12 @@ class TestArticle:
 
         assert 5 <= len(article_1.title) <= 50
 
-        # uncomment the next two lines if using Exceptions
-        # with pytest.raises(Exception):
+        # Uncomment to test validation for invalid title length
+        # with pytest.raises(ValueError):
         #     Article(author, magazine, "Test")
 
-        # uncomment the next two lines if using Exceptions
-        # with pytest.raises(Exception):
+        # Uncomment to test validation for title length exceeding max
+        # with pytest.raises(ValueError):
         #     Article(author, magazine, "How to wear a tutu with style and walk confidently down the street")
 
     def test_has_an_author(self):

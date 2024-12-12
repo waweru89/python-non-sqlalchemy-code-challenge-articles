@@ -1,12 +1,9 @@
 import pytest
-
 from classes.many_to_many import Article
 from classes.many_to_many import Magazine
 from classes.many_to_many import Author
 
-
 class TestMagazine:
-    """Magazine in many_to_many.py"""
 
     def test_has_name(self):
         """Magazine is initialized with a name"""
@@ -27,13 +24,12 @@ class TestMagazine:
         magazine_1.name = "New Yorker"
         assert magazine_1.name == "New Yorker"
 
-        # comment out the next two lines if using Exceptions
-        magazine_2.name = 2
-        assert magazine_2.name == "AD"
+        # Attempting to set a non-string value should raise a ValueError
+        with pytest.raises(ValueError):
+            magazine_2.name = 2  # This should raise an exception
 
-        # uncomment the next two lines if using Exceptions
-        # with pytest.raises(Exception):
-        #     Magazine(2, "Numbers")
+        # After the failed assignment, the name should remain unchanged
+        assert magazine_2.name == "AD"
 
     def test_name_len(self):
         """magazine name is between 2 and 16 characters, inclusive"""
@@ -43,21 +39,16 @@ class TestMagazine:
         assert 2 <= len(magazine_1.name) <= 16
         assert 2 <= len(magazine_2.name) <= 16
 
-        # comment out the next two lines if using Exceptions
-        magazine_1.name = "New Yorker Plus X"
-        assert magazine_1.name == "Vogue"
+        # Test valid name assignment
+        magazine_1.name = "New Yorker"
+        assert magazine_1.name == "New Yorker"
 
-        # comment out the next two lines if using Exceptions
-        magazine_2.name = "A"
-        assert magazine_2.name == "AD"
+        # Invalid name assignments
+        with pytest.raises(ValueError):
+            magazine_1.name = "New Yorker Plus X"  # More than 16 characters
 
-        # uncomment the next two lines if using Exceptions
-        # with pytest.raises(Exception):
-        #     magazine_1.name = "New Yorker Plus X"
-
-        # uncomment the next two lines if using Exceptions
-        # with pytest.raises(Exception):
-        #     magazine_2.name = "A"
+        with pytest.raises(ValueError):
+            magazine_2.name = "A"  # Less than 2 characters
 
     def test_has_category(self):
         """Magazine is initialized with a category"""
@@ -80,15 +71,12 @@ class TestMagazine:
 
         assert isinstance(magazine_1.category, str)
 
-        # comment out the next two lines if using Exceptions
-        magazine_2.category = 2
-        assert magazine_2.category == "Architecture"
-        
-        assert isinstance(magazine_2.category, str)
+        # Attempting to set a non-string value should raise a ValueError
+        with pytest.raises(ValueError):
+            magazine_2.category = 2  # This should raise an exception
 
-        # uncomment the next two lines if using Exceptions
-        # with pytest.raises(Exception):
-        #     Magazine("GQ", 2)
+        # After the failed assignment, the category should remain unchanged
+        assert magazine_2.category == "Architecture"
 
     def test_category_len(self):
         """magazine category has length greater than 0"""
@@ -96,14 +84,12 @@ class TestMagazine:
 
         assert magazine_1.category != ""
 
-        # comment out the next three lines if using Exceptions
-        magazine_1.category = ""
-        assert magazine_1.category == "Fashion"
-        assert magazine_1.category != ""
+        # Attempting to set an empty category should raise a ValueError
+        with pytest.raises(ValueError):
+            magazine_1.category = ""  # This should raise an exception
 
-        # uncomment the next two lines if using Exceptions
-        # with pytest.raises(Exception):
-        #     magazine_1.category = ""
+        # The category should remain unchanged after the failed assignment
+        assert magazine_1.category == "Fashion"
 
     def test_has_many_articles(self):
         """magazine has many articles"""
@@ -166,8 +152,9 @@ class TestMagazine:
         Article(author_1, magazine_1, "How to be single and happy")
         Article(author_2, magazine_1, "Dating life in NYC")
 
-        assert len(set(magazine_1.contributors())) == len(magazine_1.contributors())
-        assert len(magazine_1.contributors()) == 2
+        contributors = magazine_1.contributors()
+        assert len(set(contributors)) == len(contributors)  # Ensure uniqueness
+        assert len(contributors) == 2
 
     def test_article_titles(self):
         """returns list of titles strings of all articles written for that magazine"""
@@ -184,6 +171,8 @@ class TestMagazine:
             "2023 Eccentric Design Trends",
             "Carrara Marble is so 2020",
         ]
+        
+        # Update: Expecting None when no articles are available for the magazine
         assert magazine_3.article_titles() is None
 
     def test_contributing_authors(self):
@@ -202,23 +191,3 @@ class TestMagazine:
         assert author_2 not in magazine_1.contributing_authors()
         assert all(isinstance(author, Author) for author in magazine_1.contributing_authors())
         assert magazine_2.contributing_authors() is None
-
-    # def test_top_publisher(self):
-    #     """returns the magazine with the most articles"""
-    #     Magazine.all = []
-    #     Article.all = []
-    #     assert Magazine.top_publisher() == None
-
-    #     author_1 = Author("Carry Bradshaw")
-    #     magazine_1 = Magazine("Vogue", "Fashion")
-    #     magazine_2 = Magazine("AD", "Architecture")
-    #     assert Magazine.top_publisher() == None
-
-    #     Article(author_1, magazine_1, "How to wear a tutu with style")
-    #     Article(author_1, magazine_1, "Dating life in NYC")
-    #     Article(author_1, magazine_1, "How to be single and happy")
-    #     Article(author_1, magazine_2, "2023 Eccentric Design Trends")
-    #     Article(author_1, magazine_2, "Carrara Marble is so 2020")
-        
-    #     assert Magazine.top_publisher() == magazine_1
-    #     assert isinstance(Magazine.top_publisher(), Magazine)
